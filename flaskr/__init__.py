@@ -6,6 +6,9 @@ import os
 
 import flask
 
+from . import auth
+from . import db
+
 
 def create_app(test_config=None):
     """
@@ -37,8 +40,7 @@ def create_app(test_config=None):
         # Load the test config if passed in.
         app.config.from_mapping(test_config)
 
-    # Ensure the instance folder exists. This should be outside the flaskr
-    # package.
+    # Ensure the instance folder exists outside of the flaskr directory.
     try:
         os.makedirs(app.instance_path)
     except OSError:
@@ -51,8 +53,9 @@ def create_app(test_config=None):
 
     # Modify the app object so it can close the database connection and
     # execute the "flask --app flaskr init-db" command from the CLI.
-    from . import db
-
     db.init_app(app)
+
+    # Add the "auth" blueprint.
+    app.register_blueprint(auth.bp)
 
     return app

@@ -8,7 +8,7 @@ import click
 import flask
 
 
-def get_db():
+def get_conn():
     """
     Return a connection to the database.
 
@@ -16,30 +16,29 @@ def get_db():
     its attributes in flask.g, a dictionary variable used by the request
     management code.
     """
-    if "db" not in flask.g:
+    if "conn" not in flask.g:
         # Get and store a connection to the database.
-        flask.g.db = sqlite3.connect(
+        flask.g.conn = sqlite3.connect(
             flask.current_app.config["DATABASE"],
             detect_types=sqlite3.PARSE_DECLTYPES,
         )
         # Configure the connection to return data rows as dictionary-like
         # objects with indexed and case-insensitive named access to columns.
-        flask.g.db.row_factory = sqlite3.Row
+        flask.g.conn.row_factory = sqlite3.Row
         # Enforce foreign key constraints.
-        cursor = flask.g.db.cursor()
-        cursor.execute("PRAGMA foreign_keys=ON")
-        cursor.close()
-    return flask.g.db
+        sql1 = "PRAGMA foreign_keys=ON"
+        flask.g.conn.execute(sql1)
+    return flask.g.conn
 
 
-def close_db(e=None):
+def close_conn(e=None):
     """
     Close the connection to the database.
     """
-    # db is a sqlite3.Connection object.
-    db = flask.g.pop("db", None)
-    if db is not None:
-        db.close()
+    # conn is a sqlite3.Connection object.
+    conn = flask.g.pop("conn", None)
+    if conn is not None:
+        conn.close()
 
 
 def init_app(app):
@@ -52,7 +51,7 @@ def init_app(app):
     Add the init_db_command function as a function that can be called with the
     "flask --app flaskr init-db" command.
     """
-    app.teardown_appcontext(close_db)
+    app.teardown_appcontext(close_conn)
     app.cli.add_command(init_db_command)
 
 
@@ -61,13 +60,13 @@ def init_db():
     Initialize the database by executing the commands in the schema.sql file.
     """
     # Get a connection to the database.
-    db = get_db()
+    conn = get_conn()
     # Open a resource, schema.sql, relative to the flaskr package.
     with flask.current_app.open_resource("schema.sql") as f:
         # Call the sqlite3.Connection.executescript method to execute the
         # commands in the schema.sql file.
         commands = f.read().decode("utf8")
-        db.executescript(commands)
+        conn.executescript(commands)
 
 
 @click.command("init-db")
