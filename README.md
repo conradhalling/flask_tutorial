@@ -135,4 +135,4 @@ http://127.0.0.1:5000/hello.
 ## License
 
 This repository uses the BSD 3-Clause License because that is the license used
-by the Flask project.
+by the [Flask project](https://github.com/pallets/flask/).

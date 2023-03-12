@@ -6,8 +6,9 @@ import os
 
 import flask
 
-from . import auth
-from . import db
+import flaskr.auth
+import flaskr.blog
+import flaskr.db
 
 
 def create_app(test_config=None):
@@ -46,16 +47,21 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # Add a simple page that says "hello".
-    @app.route("/hello")
-    def hello():
-        return "Hello, World!"
+    # # Add a simple page that says "hello".
+    # @app.route("/hello")
+    # def hello():
+    #     return "Hello, World!"
 
     # Modify the app object so it can close the database connection and
     # execute the "flask --app flaskr init-db" command from the CLI.
-    db.init_app(app)
+    flaskr.db.init_app(app)
 
-    # Add the "auth" blueprint.
-    app.register_blueprint(auth.bp)
+    # Add the blueprints.
+    app.register_blueprint(flaskr.auth.bp)
+    app.register_blueprint(flaskr.blog.bp)
+
+    # Any reference to endpoint "index" is routed to "/", which is mapped to
+    # flaskr.blog.index in flaskr/blog.py.
+    app.add_url_rule("/", endpoint="index")
 
     return app

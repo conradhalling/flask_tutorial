@@ -3,6 +3,7 @@ Manage the flask blueprint named "auth".
 """
 
 import functools
+import sqlite3
 
 import flask
 import werkzeug
@@ -19,11 +20,12 @@ def register():
     Register a new user in the database.
     """
     if flask.request.method == "POST":
+        # Handle a POST request (the form was submitted).
         username = flask.request.form["username"]
         password = flask.request.form["password"]
 
         # Make sure that username and password are not empty.
-        # The HTML also enforces this.
+        # The HTML code also enforces this.
         error = None
         if not username:
             error = "User name is required."
@@ -32,27 +34,15 @@ def register():
 
         # Register the user in the database.
         if error is None:
+            # Hash the password to increase security.
+            hashed_password = werkzeug.security.generate_password_hash(password)
+            # Can I provide a function for the following database
+            # interaction code?
             conn = flaskr.db.get_conn()
             try:
-                sql1 = """
-                    INSERT INTO tbl_user
-                    (
-                        name,
-                        password
-                    )
-                    VALUES (?, ?)
-                """
-                conn.execute(
-                    sql1,
-                    (
-                        username,
-                        werkzeug.security.generate_password_hash(password),
-                    ),
-                )
-                conn.commit()
-            except conn.IntegrityError:
+                insert_user(username, hashed_password)
+            except sqlite3.IntegrityError:
                 error = f"User {username} is already registered."
-                conn.rollback()
             else:
                 # Redirect the user to the login page.
                 return flask.redirect(flask.url_for("auth.login"))
@@ -84,19 +74,7 @@ def login():
 
         # Select the user's credentials from the database using the name
         # value. The variable user contains a dict.
-        conn = flaskr.db.get_conn()
-        sql2 = """
-            SELECT
-                id,
-                name,
-                password
-            FROM
-                tbl_user
-            WHERE
-                name = ?
-        """
-        result_set = conn.execute(sql2, (username,))
-        user = result_set.fetchone()
+        user = select_user_by_name(username)
 
         # Check that the user name and password are correct.
         error = None
@@ -115,6 +93,7 @@ def login():
             flask.session["user_id"] = user["id"]
             return flask.redirect(flask.url_for("index"))
 
+        # An error occurred. Display it.
         flask.flash(error)
 
     # For a failed login request or when showing the page initially,
@@ -145,19 +124,7 @@ def load_logged_in_user():
     if user_id is None:
         flask.g.user = None
     else:
-        conn = flaskr.db.get_conn()
-        sql3 = """
-            SELECT
-                id,
-                name,
-                password
-            FROM
-                tbl_user
-            WHERE
-                id = ?
-        """
-        result_set = conn.execute(sql3, (user_id,))
-        flask.g.user = result_set.fetchone()
+        flask.g.user = select_user_by_id(user_id)
 
 
 def login_required(view_func):
@@ -179,3 +146,58 @@ def login_required(view_func):
         return view_func(**kwargs)
 
     return wrapped_view
+
+
+# Database interaction code.
+
+
+def insert_user(username, hashed_password):
+    sql1 = """
+        INSERT INTO tbl_user
+        (
+            name,
+            password
+        )
+        VALUES (?, ?)
+    """
+    conn = flaskr.db.get_conn()
+    try:
+        conn.execute(sql1, (username, hashed_password))
+        conn.commit()
+    except sqlite3.IntegrityError:
+        conn.rollback()
+        raise
+
+
+def select_user_by_id(user_id):
+    sql2 = """
+        SELECT
+            id,
+            name,
+            password
+        FROM
+            tbl_user
+        WHERE
+            id = ?
+    """
+    conn = flaskr.db.get_conn()
+    result_set = conn.execute(sql2, (user_id,))
+    user = result_set.fetchone()
+    return user
+
+
+def select_user_by_name(username):
+    sql3 = """
+        SELECT
+            id,
+            name,
+            password
+        FROM
+            tbl_user
+        WHERE
+            name = ?
+    """
+    conn = flaskr.db.get_conn()
+    result_set = conn.execute(sql3, (username,))
+    user = result_set.fetchone()
+    return user
