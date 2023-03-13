@@ -10,12 +10,16 @@ following command:
 flask --app flaskr init-db
 ```
 
+This creates or modifies the database file, which is located at
+instance/flaskr.sqlite.
+
 ## Explore the Database
 
-After initializing and using the SQLite database, use the following commands
-to view its contents:
+After initializing the SQLite database and using the flaskr application to
+create a user and one or more blog posts, use the following commands to view
+the contents of the database tables:
 
-```shell
+```
 $ sqlite3 instance/flaskr.sqlite
 SQLite version 3.39.5 2022-10-14 20:58:05
 Enter ".help" for usage hints.
