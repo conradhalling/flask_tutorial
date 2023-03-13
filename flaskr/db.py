@@ -1,11 +1,21 @@
 """
-Manage connections to the sqlite3 database.
+Manage interactions with the sqlite3 database.
 """
 
 import sqlite3
 
 import click
 import flask
+
+
+def close_conn(e=None):
+    """
+    Close the connection to the database.
+    """
+    # conn is a sqlite3.Connection object.
+    conn = flask.g.pop("conn", None)
+    if conn is not None:
+        conn.close()
 
 
 def get_conn():
@@ -29,16 +39,6 @@ def get_conn():
         sql1 = "PRAGMA foreign_keys=ON"
         flask.g.conn.execute(sql1)
     return flask.g.conn
-
-
-def close_conn(e=None):
-    """
-    Close the connection to the database.
-    """
-    # conn is a sqlite3.Connection object.
-    conn = flask.g.pop("conn", None)
-    if conn is not None:
-        conn.close()
 
 
 def init_app(app):
@@ -81,3 +81,144 @@ def init_db_command():
     """
     init_db()
     click.echo("Initialized the database.")
+
+
+# Database interaction code.
+# Blog posts.
+
+
+def delete_post(post_id):
+    sql = """
+        DELETE FROM
+            tbl_post
+        WHERE
+            id = ?
+    """
+    conn = get_conn()
+    conn.execute(sql, (post_id,))
+    conn.commit()
+
+
+def insert_post(title, body, user_id):
+    sql = """
+        INSERT INTO tbl_post
+        (title, body, user_id)
+        VALUES (?, ?, ?)
+    """
+    conn = get_conn()
+    conn.execute(sql, (title, body, user_id))
+    conn.commit()
+
+
+def select_all_posts():
+    sql = """
+        SELECT
+            p.id,
+            p.title,
+            p.body,
+            p.created,
+            p.user_id,
+            u.name
+        FROM
+            tbl_post p
+            INNER JOIN tbl_user u
+                ON p.user_id = u.id
+        ORDER BY
+            p.created DESC
+    """
+    conn = get_conn()
+    result_set = conn.execute(sql)
+    posts = result_set.fetchall()
+    return posts
+
+
+def select_post(post_id):
+    sql = """
+        SELECT
+            p.id,
+            p.title,
+            p.body,
+            p.created,
+            p.user_id,
+            u.name
+        FROM
+            tbl_post p
+            INNER JOIN tbl_user u
+                ON p.user_id = u.id
+        WHERE
+            p.id = ?
+    """
+    conn = get_conn()
+    result_set = conn.execute(sql, (post_id,))
+    post = result_set.fetchone()
+    return post
+
+
+def update_post(post_id, title, body):
+    sql = """
+        UPDATE
+            tbl_post
+        SET
+            title = ?,
+            body = ?
+        WHERE
+            id = ?
+    """
+    conn = get_conn()
+    conn.execute(sql, (title, body, post_id))
+    conn.commit()
+
+
+# Users.
+
+
+def insert_user(username, hashed_password):
+    sql = """
+        INSERT INTO tbl_user
+        (
+            name,
+            password
+        )
+        VALUES (?, ?)
+    """
+    conn = get_conn()
+    try:
+        conn.execute(sql, (username, hashed_password))
+        conn.commit()
+    except sqlite3.IntegrityError:
+        conn.rollback()
+        raise
+
+
+def select_user_by_id(user_id):
+    sql = """
+        SELECT
+            id,
+            name,
+            password
+        FROM
+            tbl_user
+        WHERE
+            id = ?
+    """
+    conn = get_conn()
+    result_set = conn.execute(sql, (user_id,))
+    user = result_set.fetchone()
+    return user
+
+
+def select_user_by_name(username):
+    sql = """
+        SELECT
+            id,
+            name,
+            password
+        FROM
+            tbl_user
+        WHERE
+            name = ?
+    """
+    conn = get_conn()
+    result_set = conn.execute(sql, (username,))
+    user = result_set.fetchone()
+    return user
