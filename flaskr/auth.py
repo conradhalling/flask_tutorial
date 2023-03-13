@@ -50,7 +50,7 @@ def register():
         flask.flash(error)
 
     # Display the register page.
-    return flask.render_template("auth/register.html")
+    return flask.render_template("auth/register.html.j2")
 
 
 @bp.route("/login", methods=("GET", "POST"))
@@ -98,7 +98,7 @@ def login():
 
     # For a failed login request or when showing the page initially,
     # display the form for entering the user name and password.
-    return flask.render_template("auth/login.html")
+    return flask.render_template("auth/login.html.j2")
 
 
 @bp.route("/logout")

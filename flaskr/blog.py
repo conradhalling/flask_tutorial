@@ -11,7 +11,7 @@ bp = flask.Blueprint("blog", __name__)
 @bp.route("/")
 def index():
     posts = select_all_posts()
-    return flask.render_template("blog/index.html", posts=posts)
+    return flask.render_template("blog/index.html.j2", posts=posts)
 
 
 @bp.route("/create", methods=("GET", "POST"))
@@ -31,7 +31,7 @@ def create():
         else:
             insert_post(title, body, user_id)
             return flask.redirect(flask.url_for("blog.index"))
-    return flask.render_template("blog/create.html")
+    return flask.render_template("blog/create.html.j2")
 
 
 def get_post(id, check_author=True):
@@ -64,7 +64,7 @@ def update(id):
         else:
             update_post(id, title, body)
             return flask.redirect(flask.url_for("blog.index"))
-    return flask.render_template("blog/update.html", post=post)
+    return flask.render_template("blog/update.html.j2", post=post)
 
 
 @bp.route("/<int:id>/delete", methods=("POST",))
