@@ -16,34 +16,21 @@ version, v0.4, allows the user to do the following:
 
 ## Installation
 
+### Clone the Source Code
+
 Clone the source code from https://github.com/conradhalling/flask_tutorial.
-Follow the directions below to initialize the database and start the
-application in development mode.
 
-### Install Dependencies
+### Install the flaskr Package
 
-These instructions assume you have used pyenv to install Python 3.11.1 and
-you have cloned the code into ~/src/flask_tutorial.
+From within the flaskr_tutorial folder, install using pip:
 
-Execute the following commands to set up a virtual environment and install
-Flask.
-
-	$ pyenv global 3.11.1
-	$ cd ~/src/flask_tutorial
-	$ python3 -m venv venv
-	$ source venv/bin/activate
-	$ pip3 install -U pip
-	Successfully installed pip-23.0.1
-	$ pip3 install -U setuptools
-	Successfully installed setuptools-67.4.0
-	$ pip3 install flask
-	Successfully installed Jinja2-3.1.2 MarkupSafe-2.1.2 Werkzeug-2.2.3 click-8.1.3 flask-2.2.3 itsdangerous-2.1.2
+```
+pip install -e .
+```
 
 ### Initialize the Database
 
-Change the working directory to the base directory (which contains the
-`flaskr` subdirectory) and initialize or reinitialize the database with the
-following command:
+Initialize or reinitialize the database with the following command:
 
 ```shell
 flask --app flaskr init-db
@@ -51,11 +38,11 @@ flask --app flaskr init-db
 
 ### Start the Application
 
-Change the working directory to the base directory (which contains the
-`flaskr` subdirectory) and start the application with the following command:
+Start the application with the following command, where `--debug` is
+optional.
 
 ```shell
-flask --app flaskr run --debug
+flask --app flaskr run [--debug]
 ```
 
 ## License
