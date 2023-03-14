@@ -1,5 +1,9 @@
 """
-Manage the flask blueprint named "auth".
+Manage the auth blueprint.
+
+The auth blueprint provides user interfaces for creating an account,
+logging in, and logging out. It also updates flask.g.user before
+a request, and it makes sure that the user is logged in.
 """
 
 import functools
@@ -18,6 +22,15 @@ bp = flask.Blueprint("auth", __name__, url_prefix="/auth")
 def register():
     """
     Register a new user in the database.
+
+    When methood is not "POST", display the form for registering a new
+    user. Otherwise, process the form request to register the user.
+
+    If the user is registered successfully, redirect to the login
+    page.
+
+    If the user is not registered successfully, remain on the
+    page and flash an error.
     """
     if flask.request.method == "POST":
         # Handle a POST request (the form was submitted).
@@ -53,7 +66,15 @@ def register():
 @bp.route("/login", methods=("GET", "POST"))
 def login():
     """
-    Attempt to log the user in to the application.
+    Attempt to log in the user.
+
+    When methood is not "POST", display the form for registering a new
+    user. Otherwise, process the form request to log in the user.
+
+    If the user is unable to log in, display an error and remain on
+    the page.
+
+    If the user is able to log in, redirect to the index page.
     """
     # Get the user name and password and validate them against the values in
     # the database.
@@ -101,8 +122,7 @@ def login():
 @bp.route("/logout")
 def logout():
     """
-    Clear the session and redirect the user to the index page, which will
-    trigger a login request.
+    Clear the session and redirect the user to the index page.
     """
     flask.session.clear()
     return flask.redirect(flask.url_for("index"))

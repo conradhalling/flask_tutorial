@@ -1,3 +1,11 @@
+"""
+Manage the "blog" blueprint.
+
+The blog blueprint enables displaying blog posts by anyone (whether
+logged in or not); and creating, editing and deleting blog posts by
+a logged in user.
+"""
+
 import flask
 import werkzeug
 
@@ -10,6 +18,11 @@ bp = flask.Blueprint("blog", __name__)
 
 @bp.route("/")
 def index():
+    """
+    Display the home page, which shows all blog posts and provides
+    links for creating an account, logging in, logging out, and
+    editing blog posts owned by the logged in user.
+    """
     posts = flaskr.db.select_all_posts()
     return flask.render_template("blog/index.html.j2", posts=posts)
 

@@ -88,6 +88,14 @@ def init_db_command():
 
 
 def delete_post(post_id):
+    """
+    Delete a blog post given its ID.
+
+    Parameter
+    ---------
+    post_id : int
+        The database ID of the post to delete.
+    """
     sql = """
         DELETE FROM
             tbl_post
@@ -100,6 +108,18 @@ def delete_post(post_id):
 
 
 def insert_post(title, body, user_id):
+    """
+    Insert a blog post into the database.
+
+    Parameters
+    ----------
+    title : str
+        The title of the post
+    body : str
+        The body or text content of the post
+    user_id : int
+        The database ID of the user creating the post
+    """
     sql = """
         INSERT INTO tbl_post
         (title, body, user_id)
@@ -111,6 +131,10 @@ def insert_post(title, body, user_id):
 
 
 def select_all_posts():
+    """
+    Return an iterable of dicts containing post attributes for all posts
+    in the database.
+    """
     sql = """
         SELECT
             p.id,
@@ -133,6 +157,14 @@ def select_all_posts():
 
 
 def select_post(post_id):
+    """
+    Return a dict containing post attributes for a specified post.
+
+    Parameter
+    ---------
+    post_id : int
+        The database ID of the request post
+    """
     sql = """
         SELECT
             p.id,
@@ -155,6 +187,18 @@ def select_post(post_id):
 
 
 def update_post(post_id, title, body):
+    """
+    Update a blog post in the database.
+
+    Parameters
+    ----------
+    post_id : int
+        The database ID of the post to be updated
+    title : str
+        The title of the post
+    body : str
+        The body or text content of the post
+    """
     sql = """
         UPDATE
             tbl_post
@@ -173,6 +217,21 @@ def update_post(post_id, title, body):
 
 
 def insert_user(username, hashed_password):
+    """
+    Insert a new user into the database.
+
+    Parameters
+    ----------
+    username : str
+        the name of the user
+    hashed_password : str
+        the hashed version of the password
+
+    Raises
+    ------
+    sqlite.IntegrityError
+        when the user is already registered in the database
+    """
     sql = """
         INSERT INTO tbl_user
         (
@@ -191,6 +250,14 @@ def insert_user(username, hashed_password):
 
 
 def select_user_by_id(user_id):
+    """
+    Return a dict containing user attributes for a specified user.
+
+    Parameter
+    ---------
+    user_id : int
+        The database ID of the requested user
+    """
     sql = """
         SELECT
             id,
@@ -208,6 +275,14 @@ def select_user_by_id(user_id):
 
 
 def select_user_by_name(username):
+    """
+    Return a dict containing user attributes for a specified user.
+
+    Parameter
+    ---------
+    username : str
+        The name of the requested user
+    """
     sql = """
         SELECT
             id,

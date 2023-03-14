@@ -10,10 +10,16 @@ import flaskr.auth
 import flaskr.blog
 import flaskr.db
 
+__version__ = "1.0.0"
+
 
 def create_app(test_config=None):
     """
     Create and configure the application.
+
+    Returns
+    -------
+    flask.Flask object
     """
     # Create a secret key value with this command:
     #   python -c 'import secrets; print(secrets.token_hex())'
