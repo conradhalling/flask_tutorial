@@ -53,10 +53,11 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # # Add a simple page that says "hello".
-    # @app.route("/hello")
-    # def hello():
-    #     return "Hello, World!"
+    # Add a simple page that says "hello".
+    # This is left for now because it's tested by the test suite.
+    @app.route("/hello")
+    def hello():
+        return "Hello, World!"
 
     # Modify the app object so it can close the database connection and
     # execute the "flask --app flaskr init-db" command from the CLI.

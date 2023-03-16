@@ -23,20 +23,19 @@ the contents of the database tables:
 $ sqlite3 instance/flaskr.sqlite
 SQLite version 3.39.5 2022-10-14 20:58:05
 Enter ".help" for usage hints.
-
 sqlite> .schema
-CREATE TABLE user (
+CREATE TABLE tbl_user (
     id INTEGER PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL
 );
-CREATE TABLE post (
+CREATE TABLE tbl_post (
     id INTEGER PRIMARY KEY,
     user_id INTEGER NOT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     title TEXT NOT NULL,
     body TEXT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user (id)
+    FOREIGN KEY (user_id) REFERENCES tbl_user (id)
 );
 
 sqlite> select * from tbl_user;

@@ -37,8 +37,8 @@ def create():
         error = None
         if not title:
             error = "Title is required."
-        if not body:
-            error = "Content is required."
+        # elif not body:
+        #     error = "Content is required."
         if error is not None:
             flask.flash(error)
         else:
@@ -70,8 +70,8 @@ def update(id):
         error = None
         if not title:
             error = "Title is required."
-        if not body:
-            error = "Content is required."
+        # elif not body:
+        #     error = "Content is required."
         if error is not None:
             flask.flash(error)
         else:
